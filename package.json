@@ -20,5 +20,11 @@
     "node": ">=14.0.0",
     "npm": ">=6.0.0",
     "yarn": "please use npm"
-  }
+  },
+  "dependencies": {
+    "@dcl/ui-scene-utils": "^1.8.4"
+  },
+  "bundleDependencies": [
+    "@dcl/ui-scene-utils"
+  ]
 }
