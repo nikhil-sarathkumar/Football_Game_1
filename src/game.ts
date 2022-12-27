@@ -1,5 +1,29 @@
 import { movePlayerTo } from '@decentraland/RestrictedActions'
 import * as ui from '@dcl/ui-scene-utils'
+import * as utils from '@dcl/ecs-scene-utils'
+
+// const goal_area = new Entity()
+// goal_area.addComponent(new BoxShape())
+// goal_area.addComponent(new Transform({
+//   position: new Vector3(15, 0, 40),
+//   scale: new Vector3(10, 5, 3)
+// }))
+// engine.addEntity(goal_area)
+
+// const triggerBox = new utils.TriggerBoxShape()
+
+// goal_area.addComponent(
+//   new utils.TriggerComponent(
+//     triggerBox,
+// 	{
+// 		onCameraEnter :() => {
+//       ui.displayAnnouncement('ENTER', 3, Color4.Yellow(), 50, true)
+// 		}
+	
+// 	}
+    
+//   )
+// )
 
 
 const ball = new Entity()
@@ -169,15 +193,15 @@ function resetBall(goal_scored: boolean) {
   count = 0
   count1 = 0
   count2 = 0
-  // power_counter.set(0)
-  // angle_counter.set(0)
-  // direction_counter.set(0)
-  // power = 0
-  // angle = 0
-  // direction = 0
-  // sin_angle = 0
-  // cos_angle = 1
-  // tan_direction = 0
+  power_counter.set(0)
+  angle_counter.set(0)
+  direction_counter.set(0)
+  power = 0
+  angle = 0
+  direction = 0
+  sin_angle = 0
+  cos_angle = 1
+  tan_direction = 0
 
   once = true
 
@@ -247,7 +271,7 @@ export class BallMove implements ISystem {
 
     // BALL GOES IN GOAL
 
-    if (ball_z > 51 && ball_z < 56 && ball_x > 11.5 && ball_x < 20.5 && ball_y < 3.69) {
+    if (ball_z > 52 && ball_z < 56 && ball_x > 11.5 && ball_x < 20.5 && ball_y < 3.69) {
       resetBall(true)
     }
 
@@ -389,6 +413,7 @@ ball.addComponent(
       direct = horizontal*tan_direction
       engine.addSystem(ballMove)
     } else {
+      count = 0
       ui.displayAnnouncement('SELECT POWER', 5, Color4.Red(), 50, true)
     }
   },
