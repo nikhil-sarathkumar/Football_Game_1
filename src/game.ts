@@ -15,8 +15,7 @@ ball.addComponent(
   new utils.TriggerComponent(
     new utils.TriggerSphereShape(0.3),
 	{
-		onCameraEnter :() => {
-		}
+    layer: 1
 	
 	}
     
@@ -40,9 +39,12 @@ goal_area.addComponent(new Transform({ position: new Vector3(16, 1, 53), scale: 
 
 goal_area.addComponent(new utils.TriggerComponent(new utils.TriggerBoxShape(new Vector3(9, 6, 3)),
 	{
+    layer: 2,
+    triggeredByLayer: 1,
 		onTriggerEnter :() => {
       resetBall(true)
-		}
+		},
+    enableDebug: false
 	}    
   )
 )
@@ -57,10 +59,13 @@ engine.addEntity(crossbar)
 
 crossbar.addComponent(new utils.TriggerComponent(new utils.TriggerBoxShape(new Vector3(9, 0.3, 1)),
 {
+  layer: 3,
+  triggeredByLayer: 1,
   onTriggerEnter :() => {
     horizontal = horizontal*-0.5
     tan_direction = tan_direction*-1
-  }
+  },
+  enableDebug: false
 }    
 )
 )
@@ -74,10 +79,13 @@ engine.addEntity(left_post)
 
 left_post.addComponent(new utils.TriggerComponent(new utils.TriggerBoxShape(new Vector3(0.3, 6, 1)),
 {
+  layer: 3,
+  triggeredByLayer: 1,
   onTriggerEnter :() => {
     horizontal = horizontal*-0.5
     tan_direction = tan_direction*-1
-  }
+  },
+  enableDebug: false
 }    
 )
 )
@@ -90,81 +98,48 @@ engine.addEntity(right_post)
 
 right_post.addComponent(new utils.TriggerComponent(new utils.TriggerBoxShape(new Vector3(0.3, 6, 1)),
 {
+  layer: 3,
+  triggeredByLayer: 1,
   onTriggerEnter :() => {
     horizontal = horizontal*-0.5
     tan_direction = tan_direction*-1
-  }
+  },
+  enableDebug: false
 }    
 )
 )
 
+const wallshape = new BoxShape()
+wallshape.visible = true
 
-const wall_1 = new Entity()
-wall_1.addComponent(new BoxShape())
-engine.addEntity(wall_1)
-var wall_1_length = 1
-var wall_1_height = 1
 
-wall_1.addComponent(new utils.TriggerComponent(new utils.TriggerBoxShape(new Vector3(wall_1_length, wall_1_height, 2)),
-{
-onTriggerEnter :() => {
-  horizontal = horizontal*-0.1
-  tan_direction = tan_direction*-1
+function add_wall(x: number, y: number, z: number, length: number, width: number) {
+  const wall = new Entity()
+  wall.addComponent(wallshape)
+  engine.addEntity(wall)
+  wall.addComponentOrReplace(new Transform({
+    position: new Vector3(x, y, z),
+    scale: new Vector3(length, width, 0.1)
+  }))
+  var wall_shape = new utils.TriggerBoxShape(new Vector3(length, width, 2))
+  wall.removeComponent(utils.TriggerComponent)
+  wall.addComponent(new utils.TriggerComponent(wall_shape,
+    {
+      layer: 3,
+      triggeredByLayer: 1 ,
+      onTriggerEnter :() => {
+        // ui.displayAnnouncement('asdasdasda', 5, Color4.Red(), 50, true)
+        horizontal = horizontal*-0.1
+        tan_direction = tan_direction*-1
+      },
+      enableDebug: false
+    
+    }    
+    )
+    )
+    return wall
 }
 
-}    
-)
-)
-
-const wall_2 = new Entity()
-wall_2.addComponent(new BoxShape())
-engine.addEntity(wall_2)
-var wall_2_length = 1
-var wall_2_height = 1
-
-wall_2.addComponent(new utils.TriggerComponent(new utils.TriggerBoxShape(new Vector3(wall_2_length, wall_2_height, 2)),
-{
-onTriggerEnter :() => {
-  horizontal = horizontal*-0.1
-  tan_direction = tan_direction*-1
-}
-}    
-)
-)
-
-
-
-const wall_3 = new Entity()
-wall_3.addComponent(new BoxShape())
-engine.addEntity(wall_3)
-var wall_3_length = 1
-var wall_3_height = 1
-
-wall_3.addComponent(new utils.TriggerComponent(new utils.TriggerBoxShape(new Vector3(wall_3_length, wall_3_height, 2)),
-{
-onTriggerEnter :() => {
-  horizontal = horizontal*-0.1
-  tan_direction = tan_direction*-1
-}
-}    
-)
-)
-
-const wall_4 = new Entity()
-wall_4.addComponent(new BoxShape())
-engine.addEntity(wall_4)
-var wall_4_length = 1
-var wall_4_height = 1
-
-wall_4.addComponent(new utils.TriggerComponent(new utils.TriggerBoxShape(new Vector3(wall_4_length, wall_4_height, 2)),
-{
-onTriggerEnter :() => {
-  horizontal = horizontal*-0.1
-  tan_direction = tan_direction*-1
-}
-}    
-)
-)
 
 
 // SHOT POWER SELECTION
@@ -269,106 +244,104 @@ var goal_scored = false
 
 // BALL RESET FUNCTION
 
+var wall_1 = add_wall(0,0,0,0,0)
+var wall_2 = add_wall(0,0,0,0,0)
+
+
 function resetBall(goal_scored: boolean) {
   ball.addComponentOrReplace(new Transform({
     position: new Vector3(16, 0.2, 35),
     scale: new Vector3(3, 3, 3)
   }))
   if (goal_scored == false) {
-    ui.displayAnnouncement('MISS!', 3, Color4.Red(), 50, true)
+    ui.displayAnnouncement('MISS!', 2, Color4.Red(), 50, true)
     level = 1
     level_counter.set(1)
   } else {
-    ui.displayAnnouncement('GOAL!', 3, Color4.Yellow(), 50, true)
+    ui.displayAnnouncement('GOAL!', 2, Color4.Yellow(), 50, true)
     level += 1
     level_counter.increase(1)
   }
 
   // LEVEL DESIGNS
 
+let walls: Array<Entity> = []
+
   if (level == 1) {
-    hideWalls()
+    engine.removeEntity(wall_1)
+    engine.removeEntity(wall_2)
   }
 
   if (level == 2) {
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 3, 50),
-      scale: new Vector3(8, 2, 0.1)
-    }))
-    wall_1_length = 8
-    wall_1_height = 2
+    engine.removeEntity(wall_1)
+    utils.setTimeout(1500, ()=>{
+      ui.displayAnnouncement('LEVEL 2', 3, Color4.White(), 50, false)
+      wall_1 = add_wall(16, 2.8, 50, 8, 1.7)
+    })
   }
 
   if (level == 3) {
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0, 50),
-      scale: new Vector3(8, 3, 0.1)
-    }))
-    wall_1_height = 3
+    engine.removeEntity(wall_1)
+    utils.setTimeout(1500, ()=>{
+      ui.displayAnnouncement('LEVEL 3', 3, Color4.White(), 50, false)
+      wall_1 = add_wall(16, 0, 50, 8, 3)
+    })
   }
 
   if (level == 4) {
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(14, 2, 50),
-      scale: new Vector3(4.6, 4, 0.1)
-    }))
-    wall_1_length = 4.6
-    wall_1_height = 4
+    engine.removeEntity(wall_1)
+    utils.setTimeout(1500, ()=>{
+      ui.displayAnnouncement('LEVEL 4', 3, Color4.White(), 50, false)
+      wall_1 = add_wall(14, 1.8, 50, 4.3, 3.7)
+    })
   }
 
   if (level == 5) {
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(18, 2, 50),
-      scale: new Vector3(4.6, 4, 0.1)
-    }))
+    engine.removeEntity(wall_1)
+    utils.setTimeout(1500, ()=>{
+      ui.displayAnnouncement('LEVEL 5', 3, Color4.White(), 50, false)
+      wall_1 = add_wall(18, 1.8, 50, 4.3, 3.7)
+    })
   }
 
   if (level == 6) {
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 2, 50),
-      scale: new Vector3(4.6, 4, 0.1)
-    }))
+    engine.removeEntity(wall_1)
+    utils.setTimeout(1500, ()=>{
+      ui.displayAnnouncement('LEVEL 4', 3, Color4.White(), 50, false)
+      wall_1 = add_wall(16, 1.8, 50, 4.3, 3.7)
+      })
   }
 
   if (level == 7) {
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0, 43),
-      scale: new Vector3(5, 3, 0.1)
-    }))
-    wall_1_length = 5
-    wall_1_height = 3
+    engine.removeEntity(wall_1)
+    utils.setTimeout(1500, ()=>{
+      ui.displayAnnouncement('LEVEL 4', 3, Color4.White(), 50, false)
+      wall_1 = add_wall(16, 0, 43, 5, 3)
+    })
   }
 
   if (level == 8) {
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0, 50),
-      scale: new Vector3(8, 5, 0.1)
-    }))
-    wall_1_length = 8
-    wall_1_height = 5
+    engine.removeEntity(wall_1)
+    utils.setTimeout(1500, ()=>{
+      ui.displayAnnouncement('LEVEL 4', 3, Color4.White(), 50, false)
+      wall_1 = add_wall(16, 0, 50, 8, 5)
+    })
   }
 
  
   if (level == 9) {
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0, 43),
-      scale: new Vector3(8, 3, 0.1)
-    }))
-    wall_2.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 3, 50),
-      scale: new Vector3(8, 2, 0.1)
-    }))
-    wall_1_length = 8
-    wall_1_height = 3
-
-    wall_2_length = 8
-    wall_2_height = 2
+    engine.removeEntity(wall_1)
+    utils.setTimeout(1500, ()=>{
+      ui.displayAnnouncement('LEVEL 4', 3, Color4.White(), 50, false)
+      wall_1 = add_wall(16, 0, 43, 8, 3)
+      wall_2 = add_wall(16, 2.8, 50, 8, 1.7)
+    })
+    
 
   }
 
   if (level == 10) {
     movePlayerTo({x:16, y:0, z:20})
-    hideWalls()
     ball.addComponentOrReplace(new Transform({
       position: new Vector3(16, 0.2, 25),
       scale: new Vector3(3, 3, 3)
@@ -380,12 +353,11 @@ function resetBall(goal_scored: boolean) {
       position: new Vector3(16, 0.2, 25),
       scale: new Vector3(3, 3, 3)
     }))
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 3, 50),
-      scale: new Vector3(8, 2, 0.1)
-    }))
-    wall_1_length = 8
-    wall_1_height = 2
+    engine.removeEntity(wall_1)
+    utils.setTimeout(1500, ()=>{
+      ui.displayAnnouncement('LEVEL 2', 3, Color4.White(), 50, false)
+      wall_1 = add_wall(16, 2.8, 50, 8, 1.7)
+    })
   }
 
   if (level == 12) {
@@ -393,136 +365,137 @@ function resetBall(goal_scored: boolean) {
       position: new Vector3(16, 0.2, 25),
       scale: new Vector3(3, 3, 3)
     }))
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0, 50),
-      scale: new Vector3(8, 3, 0.1)
-    }))
-    wall_1_height = 3
+    engine.removeEntity(wall_1)
+    utils.setTimeout(1500, ()=>{
+      ui.displayAnnouncement('LEVEL 3', 3, Color4.White(), 50, false)
+      wall_1 = add_wall(16, 0, 50, 8, 3)
+    })
+
   }
 
-  if (level == 13) {
-    ball.addComponentOrReplace(new Transform({
-      position: new Vector3(12, 0.2, 25),
-      scale: new Vector3(3, 3, 3)
-    }))
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(14, 2, 50),
-      scale: new Vector3(4.6, 4, 0.1)
-    }))
-    wall_1_length = 4.6
-    wall_1_height = 4
-  }
+  // if (level == 13) {
+  //   ball.addComponentOrReplace(new Transform({
+  //     position: new Vector3(12, 0.2, 25),
+  //     scale: new Vector3(3, 3, 3)
+  //   }))
+  //   wall_1.addComponentOrReplace(new Transform({
+  //     position: new Vector3(14, 2, 50),
+  //     scale: new Vector3(4.6, 4, 0.1)
+  //   }))
+  //   wall_1_length = 4.6
+  //   wall_1_height = 4
+  // }
 
-  if (level == 14) {
-    ball.addComponentOrReplace(new Transform({
-      position: new Vector3(20, 0.2, 25),
-      scale: new Vector3(3, 3, 3)
-    }))
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(18, 2, 50),
-      scale: new Vector3(4.6, 4, 0.1)
-    }))
-  }
+  // if (level == 14) {
+  //   ball.addComponentOrReplace(new Transform({
+  //     position: new Vector3(20, 0.2, 25),
+  //     scale: new Vector3(3, 3, 3)
+  //   }))
+  //   wall_1.addComponentOrReplace(new Transform({
+  //     position: new Vector3(18, 2, 50),
+  //     scale: new Vector3(4.6, 4, 0.1)
+  //   }))
+  // }
 
-  if (level == 15) {
-    ball.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0.2, 25),
-      scale: new Vector3(3, 3, 3)
-    }))
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 2, 50),
-      scale: new Vector3(4.6, 4, 0.1)
-    }))
-  }
+  // if (level == 15) {
+  //   ball.addComponentOrReplace(new Transform({
+  //     position: new Vector3(16, 0.2, 25),
+  //     scale: new Vector3(3, 3, 3)
+  //   }))
+  //   wall_1.addComponentOrReplace(new Transform({
+  //     position: new Vector3(16, 2, 50),
+  //     scale: new Vector3(4.6, 4, 0.1)
+  //   }))
+  // }
 
-  if (level == 16) {
-    ball.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0.2, 25),
-      scale: new Vector3(3, 3, 3)
-    }))
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0, 43),
-      scale: new Vector3(5, 3, 0.1)
-    }))
-    wall_1_length = 5
-    wall_1_height = 3
-  }
+  // if (level == 16) {
+  //   ball.addComponentOrReplace(new Transform({
+  //     position: new Vector3(16, 0.2, 25),
+  //     scale: new Vector3(3, 3, 3)
+  //   }))
+  //   wall_1.addComponentOrReplace(new Transform({
+  //     position: new Vector3(16, 0, 43),
+  //     scale: new Vector3(5, 3, 0.1)
+  //   }))
+  //   wall_1_length = 5
+  //   wall_1_height = 3
+  // }
 
-  if (level == 17) {
-    ball.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0.2, 25),
-      scale: new Vector3(3, 3, 3)
-    }))
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0, 50),
-      scale: new Vector3(8, 5, 0.1)
-    }))
-    wall_1_length = 8
-    wall_1_height = 5
-  }
+  // if (level == 17) {
+  //   ball.addComponentOrReplace(new Transform({
+  //     position: new Vector3(16, 0.2, 25),
+  //     scale: new Vector3(3, 3, 3)
+  //   }))
+  //   wall_1.addComponentOrReplace(new Transform({
+  //     position: new Vector3(16, 0, 50),
+  //     scale: new Vector3(8, 5, 0.1)
+  //   }))
+  //   wall_1_length = 8
+  //   wall_1_height = 5
+  // }
 
  
-  if (level == 18) {
-    ball.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0.2, 25),
-      scale: new Vector3(3, 3, 3)
-    }))
-    wall_1.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0, 43),
-      scale: new Vector3(8, 3, 0.1)
-    }))
-    wall_2.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 3, 50),
-      scale: new Vector3(8, 2, 0.1)
-    }))
-    wall_1_length = 8
-    wall_1_height = 3
+  // if (level == 18) {
+  //   ball.addComponentOrReplace(new Transform({
+  //     position: new Vector3(16, 0.2, 25),
+  //     scale: new Vector3(3, 3, 3)
+  //   }))
+  //   wall_1.addComponentOrReplace(new Transform({
+  //     position: new Vector3(16, 0, 43),
+  //     scale: new Vector3(8, 3, 0.1)
+  //   }))
+  //   wall_2.addComponentOrReplace(new Transform({
+  //     position: new Vector3(16, 3, 50),
+  //     scale: new Vector3(8, 2, 0.1)
+  //   }))
+  //   wall_1_length = 8
+  //   wall_1_height = 3
 
-    wall_2_length = 8
-    wall_2_height = 2
+  //   wall_2_length = 8
+  //   wall_2_height = 2
 
-  }
+  // }
 
-  if (level == 19) {
-    movePlayerTo({x:16, y:0, z:20})
-    hideWalls()
-    ball.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0.2, 25),
-      scale: new Vector3(3, 3, 3)
-    }))
-    wind = 0.1
-  }
+  // if (level == 19) {
+  //   movePlayerTo({x:16, y:0, z:20})
+  //   hideWalls()
+  //   ball.addComponentOrReplace(new Transform({
+  //     position: new Vector3(16, 0.2, 25),
+  //     scale: new Vector3(3, 3, 3)
+  //   }))
+  //   wind = 0.1
+  // }
 
-  if (level == 20) {
-    movePlayerTo({x:16, y:0, z:20})
-    hideWalls()
-    ball.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0.2, 25),
-      scale: new Vector3(3, 3, 3)
-    }))
-    wind = -0.2
-  }
+  // if (level == 20) {
+  //   movePlayerTo({x:16, y:0, z:20})
+  //   hideWalls()
+  //   ball.addComponentOrReplace(new Transform({
+  //     position: new Vector3(16, 0.2, 25),
+  //     scale: new Vector3(3, 3, 3)
+  //   }))
+  //   wind = -0.2
+  // }
 
-  if (level == 21) {
-    movePlayerTo({x:16, y:0, z:20})
-    hideWalls()
-    ball.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0.2, 25),
-      scale: new Vector3(3, 3, 3)
-    }))
-    wind = 0
-    gravity = 0.01
-  }
+  // if (level == 21) {
+  //   movePlayerTo({x:16, y:0, z:20})
+  //   hideWalls()
+  //   ball.addComponentOrReplace(new Transform({
+  //     position: new Vector3(16, 0.2, 25),
+  //     scale: new Vector3(3, 3, 3)
+  //   }))
+  //   wind = 0
+  //   gravity = 0.01
+  // }
 
-  if (level == 22) {
-    movePlayerTo({x:16, y:0, z:20})
-    hideWalls()
-    ball.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0.2, 25),
-      scale: new Vector3(3, 3, 3)
-    }))
-    gravity = 0.06
-  }
+  // if (level == 22) {
+  //   movePlayerTo({x:16, y:0, z:20})
+  //   hideWalls()
+  //   ball.addComponentOrReplace(new Transform({
+  //     position: new Vector3(16, 0.2, 25),
+  //     scale: new Vector3(3, 3, 3)
+  //   }))
+  //   gravity = 0.06
+  // }
 
 
   count = 0
@@ -543,21 +516,6 @@ function resetBall(goal_scored: boolean) {
   engine.removeSystem(ballMove)
 }
 
-function hideWalls() {
-  wall_1.addComponentOrReplace(new Transform({
-    position: new Vector3(0, 1, 0)
-  }))
-  wall_2.addComponentOrReplace(new Transform({
-    position: new Vector3(0, 3, 0)
-  }))
-  wall_3.addComponentOrReplace(new Transform({
-    position: new Vector3(0, 5, 0)
-  }))
-  wall_4.addComponentOrReplace(new Transform({
-    position: new Vector3(0, 7, 0)
-  }))
-  wind = 0
-}
 
 
 
