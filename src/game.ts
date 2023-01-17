@@ -2,7 +2,14 @@ import { movePlayerTo } from '@decentraland/RestrictedActions'
 import * as ui from '@dcl/ui-scene-utils'
 import * as utils from '@dcl/ecs-scene-utils'
 
-
+const pitch = new Entity()
+pitch.addComponent(new GLTFShape("models/football_new.glb"))
+pitch.addComponent(new Transform({
+  scale: new Vector3(1, 1, 1),
+  rotation: Quaternion.Euler(0, 180, 0),
+  position: new Vector3(16, -0.1, 2.5)
+}))
+engine.addEntity(pitch)
 
 const ball = new Entity()
 ball.addComponent(new GLTFShape("models/football.glb"))
@@ -24,12 +31,6 @@ ball.addComponent(
 
 engine.addEntity(ball)
 
-const goal = new Entity()
-goal.addComponent(new GLTFShape("models/goalposts.glb"))
-goal.addComponent(new Transform({
-  position: new Vector3(20.4, 0, 50)
-}))
-engine.addEntity(goal)
 
 const goal_area = new Entity()
 goal_area.addComponent(new BoxShape())
@@ -42,7 +43,7 @@ goal_area.addComponent(new utils.TriggerComponent(new utils.TriggerBoxShape(new 
     layer: 2,
     triggeredByLayer: 1,
 		onTriggerEnter :() => {
-      resetBall(true)
+      resetBall(true, ball_x, ball_z)
 		},
     enableDebug: false
 	}    
@@ -128,7 +129,6 @@ function add_wall(x: number, y: number, z: number, length: number, width: number
       layer: 3,
       triggeredByLayer: 1 ,
       onTriggerEnter :() => {
-        // ui.displayAnnouncement('asdasdasda', 5, Color4.Red(), 50, true)
         horizontal = horizontal*-0.1
         tan_direction = tan_direction*-1
       },
@@ -146,13 +146,18 @@ function add_wall(x: number, y: number, z: number, length: number, width: number
 
 const input = Input.instance
 
-let power_counter = new ui.UICounter(0, 0, 570, Color4.Red(), 30, true)
+let power_icon = new ui.MediumIcon('images/power-icon.png', 10, 545, 200, 65)
+let power_counter = new ui.UICounter(0, -10, 570, Color4.Red(), 30, true)
+let power_bar = new ui.UIBar(0, 0, 550, Color4.Red(), ui.BarStyles.SQUAREBLACK, 1)
+
 
 export class PowerCounter implements ISystem {
   update() {
     power_counter.increase(2)
+    power_bar.increase(0.02)
     if (power_counter.read() == 100) {
       power_counter.decrease(100)
+      power_bar.set(0)
     }
   }
 }
@@ -176,13 +181,17 @@ input.subscribe("BUTTON_UP", ActionButton.ACTION_3, false, (e) => {
 
 // SHOT ANGLE SELECTION
 
-let angle_counter = new ui.UICounter(0, 0, 530, Color4.Blue(), 30, true)
+let angle_icon = new ui.MediumIcon('images/angle-icon.png', 10, 465, 200, 65)
+let angle_counter = new ui.UICounter(0, -10, 490, Color4.Blue(), 30, true)
+let angle_bar = new ui.UIBar(0, 0, 470, Color4.Blue(), ui.BarStyles.SQUAREBLACK, 1)
 
 export class AngleCounter implements ISystem {
   update() {
     angle_counter.increase(1)
+    angle_bar.increase(1/45)
     if (angle_counter.read() == 45) {
       angle_counter.decrease(45)
+      angle_bar.set(0)
     }
   }
 }
@@ -208,13 +217,23 @@ input.subscribe("BUTTON_UP", ActionButton.ACTION_4, false, (e) => {
 
 // SHOT DIRECTION SELECTION
 
-let direction_counter = new ui.UICounter(0, 0, 490, Color4.Green(), 30, true)
+let direction_icon = new ui.MediumIcon('images/direction-icon.png', 10, 385, 200, 66)
+let direction_counter = new ui.UICounter(0, -10, 410, Color4.Green(), 30, true)
+let direction_bar_right = new ui.UIBar(0, 0, 390, Color4.Green(), ui.BarStyles.SQUAREBLACK, 0.5)
+let direction_bar_left = new ui.UIBar(0, -70, 390, Color4.Green(), ui.BarStyles.SQUAREBLACK, 0.5)
 
 export class DirectionCounter implements ISystem {
   update() {
     direction_counter.increase(1)
+    if (direction_counter.read() > 0) {
+      direction_bar_right.increase(1/30)
+    }
     if (direction_counter.read() == 30) {
       direction_counter.decrease(60)
+      direction_bar_right.set(0)
+    }
+    if (direction_counter.read() < 0){
+      direction_bar_left.increase(1/30)
     }
   }
 }
@@ -236,23 +255,92 @@ input.subscribe("BUTTON_UP", ActionButton.ACTION_5, false, (e) => {
   tan_direction = (Math.tan(direction * Math.PI / 180))
 })
 
+const sphere = new SphereShape()
+
+const ball_1 = new Entity()
+ball_1.addComponent(sphere)
+ball_1.addComponent(new Transform({
+  position: new Vector3(16, 0.2, 35),
+  scale: new Vector3(0.2, 0.2, 0.2)
+}))
+engine.addEntity(ball_1)
+
+const ball_2 = new Entity()
+ball_2.addComponent(sphere)
+ball_2.addComponent(new Transform({
+  position: new Vector3(16, 0.2, 35),
+  scale: new Vector3(0.2, 0.2, 0.2)
+}))
+engine.addEntity(ball_2)
+
+const ball_3 = new Entity()
+ball_3.addComponent(sphere)
+ball_3.addComponent(new Transform({
+  position: new Vector3(16, 0.2, 35),
+  scale: new Vector3(0.2, 0.2, 0.2)
+}))
+engine.addEntity(ball_3)
+
+const ball_4 = new Entity()
+ball_4.addComponent(sphere)
+ball_4.addComponent(new Transform({
+  position: new Vector3(16, 0.2, 35),
+  scale: new Vector3(0.2, 0.2, 0.2)
+}))
+engine.addEntity(ball_4)
+
+
+export class BallPath implements ISystem {
+  update() {
+    let temp_power = power_counter.read()/50
+    let temp_angle = angle_counter.read()
+    let temp_direction = direction_counter.read()
+
+    let temp_sin_angle = (Math.sin((Math.PI/180)*temp_angle))
+    let temp_cos_angle = (Math.cos((Math.PI/180)*temp_angle))
+    let temp_tan_direction = (Math.tan(temp_direction * Math.PI / 180))
+
+    ball_1.addComponentOrReplace(new Transform({
+      scale: new Vector3(0.2, 0.2, 0.2),
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle, 0.2 + temp_power*temp_sin_angle + 0.5*-0.03, ball_z + temp_power*temp_cos_angle)
+    }))
+    ball_2.addComponentOrReplace(new Transform({
+      scale: new Vector3(0.2, 0.2, 0.2),
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*2, 0.2 + temp_power*temp_sin_angle*2 + 0.5*-0.03*4, ball_z + temp_power*2*temp_cos_angle)
+    }))
+    ball_3.addComponentOrReplace(new Transform({
+      scale: new Vector3(0.2, 0.2, 0.2),
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*3, 0.2 + temp_power*temp_sin_angle*3 + 0.5*-0.03*9, ball_z + temp_power*3*temp_cos_angle)
+    }))
+    ball_4.addComponentOrReplace(new Transform({
+      scale: new Vector3(0.2, 0.2, 0.2),
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*4, 0.2 + temp_power*temp_sin_angle*4 + 0.5*-0.03*16, ball_z + temp_power*4*temp_cos_angle)
+    }))
+  }
+}
+
+let ballPath = new BallPath()
+engine.addSystem(ballPath)
+
 var level = 1
 var level_counter = new ui.UICounter(1, -700, 600, Color4.White(), 70, false)
 var wind = 0
 
-var goal_scored = false
 
 // BALL RESET FUNCTION
 
 var wall_1 = add_wall(0,0,0,0,0)
 var wall_2 = add_wall(0,0,0,0,0)
 
+var ball_x = 16
+var ball_z = 35
 
-function resetBall(goal_scored: boolean) {
+function resetBall(goal_scored: boolean, x: number, z: number) {
   ball.addComponentOrReplace(new Transform({
-    position: new Vector3(16, 0.2, 35),
+    position: new Vector3(x, 0.2, z),
     scale: new Vector3(3, 3, 3)
   }))
+  sphere.visible = true
   if (goal_scored == false) {
     ui.displayAnnouncement('MISS!', 2, Color4.Red(), 50, true)
     level = 1
@@ -262,12 +350,17 @@ function resetBall(goal_scored: boolean) {
     level += 1
     level_counter.increase(1)
   }
+  power_bar.set(0)
+  angle_bar.set(0)
+  direction_bar_left.set(0)
+  direction_bar_right.set(0)
 
   // LEVEL DESIGNS
 
-let walls: Array<Entity> = []
 
   if (level == 1) {
+    ball_x = 16
+    ball_z = 35
     engine.removeEntity(wall_1)
     engine.removeEntity(wall_2)
   }
@@ -307,7 +400,7 @@ let walls: Array<Entity> = []
   if (level == 6) {
     engine.removeEntity(wall_1)
     utils.setTimeout(1500, ()=>{
-      ui.displayAnnouncement('LEVEL 4', 3, Color4.White(), 50, false)
+      ui.displayAnnouncement('LEVEL 6', 3, Color4.White(), 50, false)
       wall_1 = add_wall(16, 1.8, 50, 4.3, 3.7)
       })
   }
@@ -315,7 +408,7 @@ let walls: Array<Entity> = []
   if (level == 7) {
     engine.removeEntity(wall_1)
     utils.setTimeout(1500, ()=>{
-      ui.displayAnnouncement('LEVEL 4', 3, Color4.White(), 50, false)
+      ui.displayAnnouncement('LEVEL 7', 3, Color4.White(), 50, false)
       wall_1 = add_wall(16, 0, 43, 5, 3)
     })
   }
@@ -323,7 +416,7 @@ let walls: Array<Entity> = []
   if (level == 8) {
     engine.removeEntity(wall_1)
     utils.setTimeout(1500, ()=>{
-      ui.displayAnnouncement('LEVEL 4', 3, Color4.White(), 50, false)
+      ui.displayAnnouncement('LEVEL 8', 3, Color4.White(), 50, false)
       wall_1 = add_wall(16, 0, 50, 8, 5)
     })
   }
@@ -332,7 +425,7 @@ let walls: Array<Entity> = []
   if (level == 9) {
     engine.removeEntity(wall_1)
     utils.setTimeout(1500, ()=>{
-      ui.displayAnnouncement('LEVEL 4', 3, Color4.White(), 50, false)
+      ui.displayAnnouncement('LEVEL 9', 3, Color4.White(), 50, false)
       wall_1 = add_wall(16, 0, 43, 8, 3)
       wall_2 = add_wall(16, 2.8, 50, 8, 1.7)
     })
@@ -341,11 +434,16 @@ let walls: Array<Entity> = []
   }
 
   if (level == 10) {
-    movePlayerTo({x:16, y:0, z:20})
     ball.addComponentOrReplace(new Transform({
-      position: new Vector3(16, 0.2, 25),
+      position:new Vector3(16, 0.2, 25),
       scale: new Vector3(3, 3, 3)
     }))
+    utils.setTimeout(1500, ()=>{
+      ui.displayAnnouncement('LEVEL 10', 3, Color4.White(), 50, false)
+    })
+    movePlayerTo({x:16, y:0, z:20})
+    ball_x = 16
+    ball_z = 25
   }
 
   if (level == 11) {
@@ -355,7 +453,7 @@ let walls: Array<Entity> = []
     }))
     engine.removeEntity(wall_1)
     utils.setTimeout(1500, ()=>{
-      ui.displayAnnouncement('LEVEL 2', 3, Color4.White(), 50, false)
+      ui.displayAnnouncement('LEVEL 11', 3, Color4.White(), 50, false)
       wall_1 = add_wall(16, 2.8, 50, 8, 1.7)
     })
   }
@@ -367,24 +465,23 @@ let walls: Array<Entity> = []
     }))
     engine.removeEntity(wall_1)
     utils.setTimeout(1500, ()=>{
-      ui.displayAnnouncement('LEVEL 3', 3, Color4.White(), 50, false)
+      ui.displayAnnouncement('LEVEL 12', 3, Color4.White(), 50, false)
       wall_1 = add_wall(16, 0, 50, 8, 3)
     })
 
   }
 
-  // if (level == 13) {
-  //   ball.addComponentOrReplace(new Transform({
-  //     position: new Vector3(12, 0.2, 25),
-  //     scale: new Vector3(3, 3, 3)
-  //   }))
-  //   wall_1.addComponentOrReplace(new Transform({
-  //     position: new Vector3(14, 2, 50),
-  //     scale: new Vector3(4.6, 4, 0.1)
-  //   }))
-  //   wall_1_length = 4.6
-  //   wall_1_height = 4
-  // }
+  if (level == 13) {
+    ball.addComponentOrReplace(new Transform({
+      position: new Vector3(12, 0.2, 25),
+      scale: new Vector3(3, 3, 3)
+    }))
+    engine.removeEntity(wall_1)
+    utils.setTimeout(1500, ()=>{
+      ui.displayAnnouncement('LEVEL 13', 3, Color4.White(), 50, false)
+      wall_1 = add_wall(14, 2, 50, 4.6, 4)
+    })
+  }
 
   // if (level == 14) {
   //   ball.addComponentOrReplace(new Transform({
@@ -557,7 +654,7 @@ export class BallMove implements ISystem {
     // BALL STOPS
 
     if (horizontal < 0.01 && horizontal > -0.01) {
-      resetBall(false)
+      resetBall(false, ball_x, ball_z)
     }  
 
 
@@ -569,6 +666,8 @@ const ballMove = new BallMove()
 
 ball.addComponent(
   new OnPointerDown((e) => {
+    sphere.visible = false
+
     if (power != 0) {
       horizontal = power*cos_angle
       vertical = power*sin_angle
