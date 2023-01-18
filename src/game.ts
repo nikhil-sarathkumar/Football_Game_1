@@ -289,6 +289,30 @@ ball_4.addComponent(new Transform({
 }))
 engine.addEntity(ball_4)
 
+const ball_5 = new Entity()
+ball_5.addComponent(sphere)
+ball_5.addComponent(new Transform({
+  position: new Vector3(16, 0.2, 35),
+  scale: new Vector3(0.2, 0.2, 0.2)
+}))
+engine.addEntity(ball_5)
+
+const ball_6 = new Entity()
+ball_6.addComponent(sphere)
+ball_6.addComponent(new Transform({
+  position: new Vector3(16, 0.2, 35),
+  scale: new Vector3(0.2, 0.2, 0.2)
+}))
+engine.addEntity(ball_6)
+
+const ball_7 = new Entity()
+ball_7.addComponent(sphere)
+ball_7.addComponent(new Transform({
+  position: new Vector3(16, 0.2, 35),
+  scale: new Vector3(0.2, 0.2, 0.2)
+}))
+engine.addEntity(ball_7)
+
 
 export class BallPath implements ISystem {
   update() {
@@ -302,19 +326,31 @@ export class BallPath implements ISystem {
 
     ball_1.addComponentOrReplace(new Transform({
       scale: new Vector3(0.2, 0.2, 0.2),
-      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle, 0.2 + temp_power*temp_sin_angle + 0.5*-0.03, ball_z + temp_power*temp_cos_angle)
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle, 0.2 + temp_power*temp_sin_angle + 0.5*-gravity, ball_z + temp_power*temp_cos_angle)
     }))
     ball_2.addComponentOrReplace(new Transform({
       scale: new Vector3(0.2, 0.2, 0.2),
-      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*2, 0.2 + temp_power*temp_sin_angle*2 + 0.5*-0.03*4, ball_z + temp_power*2*temp_cos_angle)
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*2, 0.2 + temp_power*temp_sin_angle*2 + 0.5*-gravity*4, ball_z + temp_power*2*temp_cos_angle)
     }))
     ball_3.addComponentOrReplace(new Transform({
       scale: new Vector3(0.2, 0.2, 0.2),
-      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*3, 0.2 + temp_power*temp_sin_angle*3 + 0.5*-0.03*9, ball_z + temp_power*3*temp_cos_angle)
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*3, 0.2 + temp_power*temp_sin_angle*3 + 0.5*-gravity*9, ball_z + temp_power*3*temp_cos_angle)
     }))
     ball_4.addComponentOrReplace(new Transform({
       scale: new Vector3(0.2, 0.2, 0.2),
-      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*4, 0.2 + temp_power*temp_sin_angle*4 + 0.5*-0.03*16, ball_z + temp_power*4*temp_cos_angle)
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*4, 0.2 + temp_power*temp_sin_angle*4 + 0.5*-gravity*16, ball_z + temp_power*4*temp_cos_angle)
+    }))
+    ball_5.addComponentOrReplace(new Transform({
+      scale: new Vector3(0.2, 0.2, 0.2),
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*5, 0.2 + temp_power*temp_sin_angle*5 + 0.5*-gravity*25, ball_z + temp_power*5*temp_cos_angle)
+    }))
+    ball_6.addComponentOrReplace(new Transform({
+      scale: new Vector3(0.2, 0.2, 0.2),
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*6, 0.2 + temp_power*temp_sin_angle*6 + 0.5*-gravity*36, ball_z + temp_power*6*temp_cos_angle)
+    }))
+    ball_7.addComponentOrReplace(new Transform({
+      scale: new Vector3(0.2, 0.2, 0.2),
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*7, 0.2 + temp_power*temp_sin_angle*7 + 0.5*-gravity*49, ball_z + temp_power*7*temp_cos_angle)
     }))
   }
 }
@@ -359,6 +395,10 @@ function resetBall(goal_scored: boolean, x: number, z: number) {
 
 
   if (level == 1) {
+    ball.addComponentOrReplace(new Transform({
+      position: new Vector3(16, 0.2, 35),
+      scale: new Vector3(3, 3, 3)
+    }))
     ball_x = 16
     ball_z = 35
     engine.removeEntity(wall_1)
@@ -434,6 +474,8 @@ function resetBall(goal_scored: boolean, x: number, z: number) {
   }
 
   if (level == 10) {
+    engine.removeEntity(wall_1)
+    engine.removeEntity(wall_2)
     ball.addComponentOrReplace(new Transform({
       position:new Vector3(16, 0.2, 25),
       scale: new Vector3(3, 3, 3)
@@ -608,7 +650,6 @@ function resetBall(goal_scored: boolean, x: number, z: number) {
   cos_angle = 1
   tan_direction = 0
 
-  once = true
 
   engine.removeSystem(ballMove)
 }
@@ -629,7 +670,7 @@ var horizontal = power*cos_angle
 var vertical = power*sin_angle
 var direct = horizontal*tan_direction
 
-var once = true
+
 var gravity = 0.03
 
 
@@ -696,3 +737,17 @@ button.addComponent(
   )
 )
 engine.addEntity(button)
+
+const instructions = new Entity()
+instructions.addComponent(new BoxShape())
+instructions.addComponent(new Transform({
+  position: new Vector3 (15, 0, 35)
+}))
+instructions.addComponent(
+  new OnPointerDown((e) => {
+    ui.displayAnnouncement('HOLD 1 TO SELECT POWER \n HOLD 2 TO SELECT VERTICAL ANGLE \n HOLD 3 TO SELECT HORIZONTAL ANGLE', 5, Color4.White(), 50, true)
+  },
+    { button: ActionButton.POINTER, hoverText: "Show Controls" }
+  )
+)
+engine.addEntity(instructions)
