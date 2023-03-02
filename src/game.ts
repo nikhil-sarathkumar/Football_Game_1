@@ -2,6 +2,7 @@ import { movePlayerTo } from '@decentraland/RestrictedActions'
 import * as ui from '@dcl/ui-scene-utils'
 import * as utils from '@dcl/ecs-scene-utils'
 
+
 const pitch = new Entity()
 pitch.addComponent(new GLTFShape("models/football_new.glb"))
 pitch.addComponent(new Transform({
@@ -11,10 +12,11 @@ pitch.addComponent(new Transform({
 }))
 engine.addEntity(pitch)
 
-const ball = new Entity()
+
+export const ball = new Entity()
 ball.addComponent(new GLTFShape("models/football.glb"))
 ball.addComponent(new Transform({
-  position: new Vector3(16, 0.2, 35),
+  position: new Vector3(16, 0.3, 35),
   scale: new Vector3(3, 3, 3)
 }))
 
@@ -260,7 +262,7 @@ const sphere = new SphereShape()
 const ball_1 = new Entity()
 ball_1.addComponent(sphere)
 ball_1.addComponent(new Transform({
-  position: new Vector3(16, 0.2, 35),
+  position: new Vector3(16, 0.3, 35),
   scale: new Vector3(0.2, 0.2, 0.2)
 }))
 engine.addEntity(ball_1)
@@ -268,7 +270,7 @@ engine.addEntity(ball_1)
 const ball_2 = new Entity()
 ball_2.addComponent(sphere)
 ball_2.addComponent(new Transform({
-  position: new Vector3(16, 0.2, 35),
+  position: new Vector3(16, 0.3, 35),
   scale: new Vector3(0.2, 0.2, 0.2)
 }))
 engine.addEntity(ball_2)
@@ -276,7 +278,7 @@ engine.addEntity(ball_2)
 const ball_3 = new Entity()
 ball_3.addComponent(sphere)
 ball_3.addComponent(new Transform({
-  position: new Vector3(16, 0.2, 35),
+  position: new Vector3(16, 0.3, 35),
   scale: new Vector3(0.2, 0.2, 0.2)
 }))
 engine.addEntity(ball_3)
@@ -284,7 +286,7 @@ engine.addEntity(ball_3)
 const ball_4 = new Entity()
 ball_4.addComponent(sphere)
 ball_4.addComponent(new Transform({
-  position: new Vector3(16, 0.2, 35),
+  position: new Vector3(16, 0.3, 35),
   scale: new Vector3(0.2, 0.2, 0.2)
 }))
 engine.addEntity(ball_4)
@@ -292,7 +294,7 @@ engine.addEntity(ball_4)
 const ball_5 = new Entity()
 ball_5.addComponent(sphere)
 ball_5.addComponent(new Transform({
-  position: new Vector3(16, 0.2, 35),
+  position: new Vector3(16, 0.3, 35),
   scale: new Vector3(0.2, 0.2, 0.2)
 }))
 engine.addEntity(ball_5)
@@ -300,7 +302,7 @@ engine.addEntity(ball_5)
 const ball_6 = new Entity()
 ball_6.addComponent(sphere)
 ball_6.addComponent(new Transform({
-  position: new Vector3(16, 0.2, 35),
+  position: new Vector3(16, 0.3, 35),
   scale: new Vector3(0.2, 0.2, 0.2)
 }))
 engine.addEntity(ball_6)
@@ -308,7 +310,7 @@ engine.addEntity(ball_6)
 const ball_7 = new Entity()
 ball_7.addComponent(sphere)
 ball_7.addComponent(new Transform({
-  position: new Vector3(16, 0.2, 35),
+  position: new Vector3(16, 0.3, 35),
   scale: new Vector3(0.2, 0.2, 0.2)
 }))
 engine.addEntity(ball_7)
@@ -326,31 +328,31 @@ export class BallPath implements ISystem {
 
     ball_1.addComponentOrReplace(new Transform({
       scale: new Vector3(0.2, 0.2, 0.2),
-      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle, 0.2 + temp_power*temp_sin_angle + 0.5*-gravity, ball_z + temp_power*temp_cos_angle)
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle, 0.3 + temp_power*temp_sin_angle + 0.5*-gravity, ball_z + temp_power*temp_cos_angle)
     }))
     ball_2.addComponentOrReplace(new Transform({
       scale: new Vector3(0.2, 0.2, 0.2),
-      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*2, 0.2 + temp_power*temp_sin_angle*2 + 0.5*-gravity*4, ball_z + temp_power*2*temp_cos_angle)
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*2, 0.3 + temp_power*temp_sin_angle*2 + 0.5*-gravity*4, ball_z + temp_power*2*temp_cos_angle)
     }))
     ball_3.addComponentOrReplace(new Transform({
       scale: new Vector3(0.2, 0.2, 0.2),
-      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*3, 0.2 + temp_power*temp_sin_angle*3 + 0.5*-gravity*9, ball_z + temp_power*3*temp_cos_angle)
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*3, 0.3 + temp_power*temp_sin_angle*3 + 0.5*-gravity*9, ball_z + temp_power*3*temp_cos_angle)
     }))
     ball_4.addComponentOrReplace(new Transform({
       scale: new Vector3(0.2, 0.2, 0.2),
-      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*4, 0.2 + temp_power*temp_sin_angle*4 + 0.5*-gravity*16, ball_z + temp_power*4*temp_cos_angle)
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*4, 0.3 + temp_power*temp_sin_angle*4 + 0.5*-gravity*16, ball_z + temp_power*4*temp_cos_angle)
     }))
     ball_5.addComponentOrReplace(new Transform({
       scale: new Vector3(0.2, 0.2, 0.2),
-      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*5, 0.2 + temp_power*temp_sin_angle*5 + 0.5*-gravity*25, ball_z + temp_power*5*temp_cos_angle)
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*5, 0.3 + temp_power*temp_sin_angle*5 + 0.5*-gravity*25, ball_z + temp_power*5*temp_cos_angle)
     }))
     ball_6.addComponentOrReplace(new Transform({
       scale: new Vector3(0.2, 0.2, 0.2),
-      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*6, 0.2 + temp_power*temp_sin_angle*6 + 0.5*-gravity*36, ball_z + temp_power*6*temp_cos_angle)
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*6, 0.3 + temp_power*temp_sin_angle*6 + 0.5*-gravity*36, ball_z + temp_power*6*temp_cos_angle)
     }))
     ball_7.addComponentOrReplace(new Transform({
       scale: new Vector3(0.2, 0.2, 0.2),
-      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*7, 0.2 + temp_power*temp_sin_angle*7 + 0.5*-gravity*49, ball_z + temp_power*7*temp_cos_angle)
+      position: new Vector3(ball_x + temp_tan_direction*temp_power*temp_cos_angle*7, 0.3 + temp_power*temp_sin_angle*7 + 0.5*-gravity*49, ball_z + temp_power*7*temp_cos_angle)
     }))
   }
 }
@@ -362,6 +364,48 @@ var level = 1
 var level_counter = new ui.UICounter(1, -700, 600, Color4.White(), 70, false)
 var wind = 0
 
+var time_limit = new ui.UICounter(0, -1200, 600, Color4.Red(), 70, false)
+var highest_level: number = 0
+var counter = 0
+
+export class Countdown implements ISystem {
+  update(){
+    counter += 1
+    if (counter % (30) == 0){
+      time_limit.decrease(1)
+    }
+    if (level > highest_level) {
+      highest_level = level
+      time_limit.increase(10)
+    }
+    
+    if (time_limit.read() == 0){
+      ui.displayAnnouncement('GAME OVER! HIGHSCORE:', 10, Color4.White(), 50, true)
+      highest_level = 0
+      engine.removeSystem(countdown)
+    }
+  }
+}
+
+var countdown = new Countdown()
+
+
+const start = new Entity()
+start.addComponent(new BoxShape())
+start.addComponent(new Transform({
+  position: new Vector3 (5, 0, 35)
+}))
+start.addComponent(
+  new OnPointerDown((e) => {
+    engine.addSystem(countdown)
+  },
+    { button: ActionButton.POINTER, hoverText: "Start Game" }
+  )
+)
+engine.addEntity(start)
+
+
+
 
 // BALL RESET FUNCTION
 
@@ -370,6 +414,7 @@ var wall_2 = add_wall(0,0,0,0,0)
 
 var ball_x = 16
 var ball_z = 35
+
 
 function resetBall(goal_scored: boolean, x: number, z: number) {
   ball.addComponentOrReplace(new Transform({
@@ -385,6 +430,7 @@ function resetBall(goal_scored: boolean, x: number, z: number) {
     ui.displayAnnouncement('GOAL!', 2, Color4.Yellow(), 50, true)
     level += 1
     level_counter.increase(1)
+    time_limit.increase(2)
   }
   power_bar.set(0)
   angle_bar.set(0)
@@ -525,16 +571,16 @@ function resetBall(goal_scored: boolean, x: number, z: number) {
     })
   }
 
-  // if (level == 14) {
-  //   ball.addComponentOrReplace(new Transform({
-  //     position: new Vector3(20, 0.2, 25),
-  //     scale: new Vector3(3, 3, 3)
-  //   }))
-  //   wall_1.addComponentOrReplace(new Transform({
-  //     position: new Vector3(18, 2, 50),
-  //     scale: new Vector3(4.6, 4, 0.1)
-  //   }))
-  // }
+  if (level == 14) {
+    ball.addComponentOrReplace(new Transform({
+      position: new Vector3(20, 0.2, 25),
+      scale: new Vector3(3, 3, 3)
+    }))
+    wall_1.addComponentOrReplace(new Transform({
+      position: new Vector3(18, 2, 50),
+      scale: new Vector3(4.6, 4, 0.1)
+    }))
+  }
 
   // if (level == 15) {
   //   ball.addComponentOrReplace(new Transform({
@@ -674,6 +720,8 @@ var direct = horizontal*tan_direction
 var gravity = 0.03
 
 
+
+
 export class BallMove implements ISystem {
   update() {
 
@@ -687,10 +735,12 @@ export class BallMove implements ISystem {
 
     // BALL BOUNCE
 
-    if (ball.getComponent(Transform).position.y < 0.1) {
+
+    if (ball.getComponent(Transform).position.y < 0.3) {
       vertical = vertical*-0.65
       horizontal = horizontal*0.85
     }  
+
 
     // BALL STOPS
 
@@ -741,11 +791,11 @@ engine.addEntity(button)
 const instructions = new Entity()
 instructions.addComponent(new BoxShape())
 instructions.addComponent(new Transform({
-  position: new Vector3 (15, 0, 35)
+  position: new Vector3 (10, 0, 35)
 }))
 instructions.addComponent(
   new OnPointerDown((e) => {
-    ui.displayAnnouncement('HOLD 1 TO SELECT POWER \n HOLD 2 TO SELECT VERTICAL ANGLE \n HOLD 3 TO SELECT HORIZONTAL ANGLE', 5, Color4.White(), 50, true)
+    ui.displayAnnouncement('HOLD 1 TO SELECT POWER \n HOLD 2 TO SELECT VERTICAL ANGLE \n HOLD 3 TO SELECT HORIZONTAL ANGLE \n\n SCORE AS MANY GOALS AS YOU CAN BEFORE THE TIME RUNS OUT!', 10, Color4.White(), 50, true)
   },
     { button: ActionButton.POINTER, hoverText: "Show Controls" }
   )
