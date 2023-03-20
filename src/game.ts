@@ -1,6 +1,31 @@
 import { movePlayerTo } from '@decentraland/RestrictedActions'
 import * as ui from '@dcl/ui-scene-utils'
 import * as utils from '@dcl/ecs-scene-utils'
+import { publishScore, getScoreBoard } from './serverHandler'
+import { buildLeaderBoard } from './leaderBoard'
+
+
+
+const boardParent = new Entity()
+boardParent.addComponent(new PlaneShape())
+boardParent.addComponent(
+  new Transform(
+    new Transform({
+      position: new Vector3(1, 3, 32),
+      rotation: Quaternion.Euler(0, 270, 0),
+      scale: new Vector3(6,5,0)
+    })
+  )
+)
+engine.addEntity(boardParent)
+
+async function updateBoard() {
+  const scoreData: any = await getScoreBoard() // data.scoreBoard
+  buildLeaderBoard(scoreData, boardParent, 9).catch((error) => log(error))
+}
+
+updateBoard().catch((error) => log(error))
+
 
 
 const pitch = new Entity()
@@ -8,7 +33,7 @@ pitch.addComponent(new GLTFShape("models/football_new.glb"))
 pitch.addComponent(new Transform({
   scale: new Vector3(1, 1, 1),
   rotation: Quaternion.Euler(0, 180, 0),
-  position: new Vector3(16, -0.1, 2.5)
+  position: new Vector3(32, 0, 64)
 }))
 engine.addEntity(pitch)
 
@@ -426,11 +451,16 @@ function resetBall(goal_scored: boolean, x: number, z: number) {
     ui.displayAnnouncement('MISS!', 2, Color4.Red(), 50, true)
     level = 1
     level_counter.set(1)
+    boardParent.addComponent( new utils.Delay(1000, () => {
+    updateBoard().catch((error) => log(error))}
+    ))
   } else {
     ui.displayAnnouncement('GOAL!', 2, Color4.Yellow(), 50, true)
     level += 1
     level_counter.increase(1)
+    publishScore(level.toString());
     time_limit.increase(2)
+
   }
   power_bar.set(0)
   angle_bar.set(0)
