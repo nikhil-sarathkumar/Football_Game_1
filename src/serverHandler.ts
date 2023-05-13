@@ -9,7 +9,7 @@ export const fireBaseServer =
 // get latest scoreboard data from server
 export async function getScoreBoard() {
     try {
-        const url = fireBaseServer + 'get-scores'
+        const url = fireBaseServer + '/get-scores'
         const response = await fetch(url)
         const json = await response.json()
         log(json)
@@ -26,7 +26,7 @@ export async function publishScore(score: string) {
         if (!data) return;
         log(data.displayName);
     
-    fetch('https://us-central1-westminster-meta.cloudfunctions.net/app',
+    fetch('https://us-central1-westminster-meta.cloudfunctions.net/app/publish-scores',
         {
             headers: {
                 'Accept': 'application/json',

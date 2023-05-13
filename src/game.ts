@@ -6,14 +6,66 @@ import { buildLeaderBoard } from './leaderBoard'
 
 
 
+
+// let myEntity = new Entity()
+// myEntity.addComponent(new TextShape("LeaderBoard"))
+// myEntity.getComponent(TextShape).shadowColor = Color3.Gray()
+// myEntity.getComponent(TextShape).shadowOffsetY = 1
+// myEntity.getComponent(TextShape).shadowOffsetX = -1
+// myEntity.addComponent(
+//   new Transform(
+//     new Transform({
+//       position: new Vector3(2, 6, 32),
+//       rotation: Quaternion.Euler(0, 270, 0),
+//       scale: new Vector3(.5,.5,.5)
+//     })
+//   )
+// )
+// engine.addEntity(myEntity)
+// let myEntity2 = new Entity()
+// myEntity2.addComponent(new TextShape("Sugar     10 \nVictor      8 \nPetar      5 \nDoggo      4 \nDecen      1"))
+// myEntity2.getComponent(TextShape).shadowColor = Color3.Gray()
+// myEntity2.getComponent(TextShape).shadowOffsetY = 1
+// myEntity2.getComponent(TextShape).shadowOffsetX = -1
+// myEntity2.addComponent(
+//   new Transform(
+//     new Transform({
+//       position: new Vector3(1.5, 4, 32),
+//       rotation: Quaternion.Euler(0, 270, 0),
+//       scale: new Vector3(.5,.5,.5)
+//     })
+//   )
+// )
+// engine.addEntity(myEntity2)
+
+
+// const boardParent = new Entity()
+// boardParent.addComponent(new PlaneShape())
+// let myMaterial = new Material
+// myMaterial.albedoColor = Color4.Black()
+// boardParent.addComponent(myMaterial)
+// boardParent.addComponent(
+//   new Transform(
+//     new Transform({
+//       position: new Vector3(1, 4.5, 32),
+//       rotation: Quaternion.Euler(0, 270, 0),
+//       scale: new Vector3(6,6,0)
+//     })
+//   )
+// )
+// engine.addEntity(boardParent)
+
 const boardParent = new Entity()
 boardParent.addComponent(new PlaneShape())
+let myMaterial = new Material
+myMaterial.albedoColor = Color4.White()
+boardParent.addComponent(myMaterial)
 boardParent.addComponent(
   new Transform(
     new Transform({
       position: new Vector3(1, 3, 32),
       rotation: Quaternion.Euler(0, 270, 0),
-      scale: new Vector3(6,5,0)
+      scale: new Vector3(6,6,0)
     })
   )
 )
@@ -21,7 +73,7 @@ engine.addEntity(boardParent)
 
 async function updateBoard() {
   const scoreData: any = await getScoreBoard() // data.scoreBoard
-  buildLeaderBoard(scoreData, boardParent, 9).catch((error) => log(error))
+  buildLeaderBoard(scoreData, boardParent, 6).catch((error) => log(error))
 }
 
 updateBoard().catch((error) => log(error))
